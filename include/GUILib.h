@@ -1,8 +1,6 @@
-#ifndef __MAIN_H__
-#define __MAIN_H__
 
-#include <windows.h>
-
+#ifndef _GUI_LIB_H_
+#define _GUI_LIB_H_
 /*  To use this exported function of dll, include this header
  *  in your project.
  */
@@ -13,4 +11,4 @@
     #define DLL_EXPORT __declspec(dllimport)
 #endif
 
-#endif // __MAIN_H__
+#endif
