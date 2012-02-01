@@ -7,16 +7,16 @@ class DLL_EXPORT Menu : public GUI::Widget
 	public:
 		Menu (GBox b);
 		~Menu();
-		GUI::WIDGET_TYPE::en type();
+		GUI::WIDGET_TYPE::en type() const;
 
-		GUI::Widget* addWidget (GUI::Widget* w);
-		GUI::Widget* getWidget (int wid);
+		GUI::Widget* widget (int wid) const;
+		GUI::Widget* widget (GUI::Widget* w);
 
-		void draw (Resource& res);
-		Input* getInput (Resource& res, ALLEGRO_EVENT&, ALLEGRO_EVENT_QUEUE*);
+		void draw (GBox menupos, Resource& res);
+		Input* getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq);
 
 	private:
-		std::vector<GUI::Widget*> widget;
+		std::vector<GUI::Widget*> _widget;
 };
 
 #endif // CMENU

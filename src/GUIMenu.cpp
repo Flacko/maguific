@@ -1,54 +1,60 @@
 
-#include <cstdio>
 #include "GUIGlobals.h"
 
-GUI::Menu::Menu(GBox _box)
+GUI::Menu::Menu (GBox _box)
 {
-	init();
-	box(_box);
+	box (_box);
 }
 GUI::Menu::~Menu()
 {
-	widget.clear();
+	_widget.clear();
 }
-GUI::WIDGET_TYPE::en GUI::Menu::type()
+GUI::WIDGET_TYPE::en GUI::Menu::type() const
 {
 	return GUI::WIDGET_TYPE::MENU;
 }
 
-void GUI::Menu::draw(Resource& res)
+void GUI::Menu::draw (GBox menupos, Resource& res)
 {
-	#define BMP(x) res.getGfx(GUI::GFX_ID::menu_##x)
-	fillBox(box(), BMP(bd_t),BMP(bd_r),BMP(bd_b),BMP(bd_l),BMP(cr_tl),BMP(cr_tr),BMP(cr_br),BMP(cr_bl), BMP(bg),0);
-	#undef BMP
-	for(std::vector<GUI::Widget*>::iterator it = widget.begin(); it!=widget.end(); it++)
+#define BMP(x) res.getGfx(GUI::GFX_ID::menu_##x)
+	fillBox (box(), BMP (bd_t), BMP (bd_r), BMP (bd_b), BMP (bd_l), BMP (cr_tl), BMP (cr_tr), BMP (cr_br), BMP (cr_bl), BMP (bg), 0);
+#undef BMP
+	for (std::vector<GUI::Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
 	{
-		(*it)->draw(box(),res);
+		(*it)->draw (box(), res);
 	}
 }
 
-GUI::Input* GUI::Menu::getInput(Resource& res, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq)
+GUI::Input* GUI::Menu::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq)
 {
-	for(std::vector<GUI::Widget*>::iterator it = widget.begin(); it!=widget.end(); it++)
+	for (std::vector<GUI::Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
 	{
-		GUI::Input* in = (*it)->getInput(box(),res,ev, eq);
-		if(in)
+		GUI::Input* in = (*it)->getInput (box(), res, ev, eq);
+		if (in)
 		{
-			in->menu(this);
+			in->menu (this);
 			return in;
 		}
 	}
 	return NULL;
 }
 
-GUI::Widget* GUI::Menu::addWidget(GUI::Widget* wdg)
+GUI::Widget* GUI::Menu::widget (GUI::Widget* w)
 {
-	wdg->id(widget.size());
-	widget.push_back(wdg);
-	return wdg;
+	w->id (_widget.size());
+	_widget.push_back (w);
+	return w;
 }
 
-GUI::Widget* GUI::Menu::getWidget(int id)
+GUI::Widget* GUI::Menu::widget (int id) const
 {
-	return widget[id];
+	if (id < 0)
+	{
+		id = _widget.size() - id;
+	}
+	if (id >= int (_widget.size()))
+	{
+		id = id % _widget.size();
+	}
+	return _widget[id];
 }

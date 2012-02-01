@@ -106,12 +106,12 @@ namespace GUI
 	};
 	struct DLL_EXPORT GPoint
 	{
-		int x,y;
-		GPoint() : x(0), y(0) {}
-		GPoint(int _x, int _y) : x(_x), y(_y) {}
-		GPoint(const GPoint& other) : x(other.x), y(other.y) {}
+		int x, y;
+		GPoint() : x (0), y (0) {}
+		GPoint (int _x, int _y) : x (_x), y (_y) {}
+		GPoint (const GPoint& other) : x (other.x), y (other.y) {}
 
-		GPoint& operator =(const GPoint& other)
+		GPoint& operator = (const GPoint& other)
 		{
 			x = other.x;
 			y = other.y;
@@ -121,12 +121,12 @@ namespace GUI
 
 	struct DLL_EXPORT GBox
 	{
-		int x,y,w,h;
-		GBox() : x(0), y(0), w(0), h(0) {}
-		GBox(int _x, int _y, int _w, int _h) : x(_x), y(_y), w(_w), h(_h) {}
-		GBox(const GBox& other) : x(other.x), y(other.y), w(other.w), h(other.h) {}
+		int x, y, w, h;
+		GBox() : x (0), y (0), w (0), h (0) {}
+		GBox (int _x, int _y, int _w, int _h) : x (_x), y (_y), w (_w), h (_h) {}
+		GBox (const GBox& other) : x (other.x), y (other.y), w (other.w), h (other.h) {}
 
-		GBox& operator=(const GBox& other)
+		GBox& operator= (const GBox& other)
 		{
 			x = other.x;
 			y = other.y;
@@ -134,23 +134,23 @@ namespace GUI
 			h = other.h;
 			return *this;
 		}
-		GBox operator>>(const GBox& other)
+		GBox operator>> (const GBox& other)
 		{
-			return GBox(x+other.x,y+other.y,w,h);
+			return GBox (x + other.x, y + other.y, w, h);
 		}
-		GBox operator>>(const GPoint& other)
+		GBox operator>> (const GPoint& other)
 		{
-			return GBox(x+other.x, y+other.y, w, h);
+			return GBox (x + other.x, y + other.y, w, h);
 		}
-		bool collides(GPoint other)
+		bool collides (GPoint other)
 		{
-			return (other.x >= x && other.x <= x+w)&&(other.y >= y && other.y <= y+h);
+			return (other.x >= x && other.x <= x + w) && (other.y >= y && other.y <= y + h);
 		}
-		bool collides(GBox other)
+		bool collides (GBox other)
 		{
-			if( (other.x <= x+w and other.x >= x) or (other.x+other.w <= x+w and other.x+other.w >= x) )
+			if ( (other.x <= x + w and other.x >= x) or (other.x + other.w <= x + w and other.x + other.w >= x))
 			{
-				if( (other.y <= y+h and other.y >= y) or (other.y+other.h <= y+h and other.y+other.h >= y) )
+				if ( (other.y <= y + h and other.y >= y) or (other.y + other.h <= y + h and other.y + other.h >= y))
 				{
 					return true;
 				}
@@ -158,15 +158,17 @@ namespace GUI
 			return false;
 		}
 	};
-	#include "GUIInput.h"
-	#include "GUIResource.h"
-	#include "GUIWidget.h"
-	#include "GUIMenu.h"
-	#include "GUIManager.h"
 
-	#include "GUIButton.h"
-	#include "GUICheckBox.h"
-	#include "GUIScroll.h"
+#include "GUIInput.h"
+#include "GUIResource.h"
+#include "GUIWidget.h"
+#include "GUIMenu.h"
+#include "GUIManager.h"
+
+#include "GUIButton.h"
+#include "GUICheckBox.h"
+#include "GUIScroll.h"
+
 }
 
 #endif

@@ -7,44 +7,44 @@ class DLL_EXPORT Scroll : public GUI::Widget
 	public:
 		Scroll (GBox, int, int, int, int);
 		~Scroll();
-		int value()
+
+		WIDGET_TYPE::en type() const
+		{
+			return WIDGET_TYPE::SCROLL;
+		}
+		int value() const
 		{
 			return (_flip ? _max - _value : _value);
 		}
+		int max() const
+		{
+			return _max;
+		}
+		int buttonHeight() const
+		{
+			return _buttonHeight;
+		}
+		GBox box() const
+		{
+			return _box;
+		}
+
 		void value (int v)
 		{
 			_value = (_flip ? _max - v : v);
 		}
-
-		int max()
-		{
-			return _max;
-		}
 		void max (int m)
 		{
 			_max = m;
-		}
-		int buttonHeight()
-		{
-			return _buttonHeight;
 		}
 		void buttonHeight (int bh)
 		{
 			_buttonHeight = bh;
 			box (_box);
 		}
-		void box (GBox b)
-		{
-			_box = b;
-			_increase->box (GBox (_box.x, _box.y, _rot ? _buttonHeight : _box.w, _rot ? _box.h : _buttonHeight));
-			_decrease->box (GBox (_rot ? _box.x + _box.w - _buttonHeight : _box.x, _rot ? _box.y : _box.y + _box.h - _buttonHeight, _rot ? _buttonHeight : _box.w, _rot ? _box.h : _buttonHeight));
-			(_rot ? _box.x : _box.y) += _buttonHeight;
-			(_rot ? _box.w : _box.h) -= _buttonHeight * 2;
-		}
-		GBox box()
-		{
-			return _box;
-		}
+
+		void box (GBox b);
+
 		void increase()
 		{
 			_value++;
@@ -60,6 +60,7 @@ class DLL_EXPORT Scroll : public GUI::Widget
 		Input* getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq);
 
 	private:
+		ALLEGRO_TIMER* _timer;
 		Button* _increase;
 		Button* _decrease;
 		int _max;
@@ -67,6 +68,5 @@ class DLL_EXPORT Scroll : public GUI::Widget
 		int _buttonHeight;
 		bool _rot;
 		bool _flip;
-		ALLEGRO_TIMER* _timer;
 };
 #endif

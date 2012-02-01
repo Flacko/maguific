@@ -9,53 +9,58 @@ GUI::Manager::Manager()
 
 GUI::Manager::~Manager()
 {
-	menus.clear();
+	_widget.clear();
 }
 
 void GUI::Manager::draw()
 {
-	for(std::vector<GUI::Menu*>::iterator it=menus.begin(); it!=menus.end(); it++)
+	for (std::vector<GUI::Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
 	{
-		(*it)->draw(res);
+		(*it)->draw (GUI::GBox(), res);
 	}
 }
-GUI::Input* GUI::Manager::getInput(ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq)
+
+GUI::Input* GUI::Manager::getInput (ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq)
 {
-	for(std::vector<GUI::Menu*>::iterator it=menus.begin(); it!=menus.end(); it++)
+	for (std::vector<GUI::Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
 	{
-		GUI::Input* in = (*it)->getInput(res,ev,eq);
-		if(in)
+		GUI::Input* in = (*it)->getInput (GBox(), res, ev, eq);
+		if (in)
 		{
-				return in;
+			return in;
 		}
 	}
 	return NULL;
 }
 
-GUI::Menu* GUI::Manager::addMenu(GUI::Menu* men)
+GUI::Widget* GUI::Manager::widget (int id) const
 {
-	men->id(menus.size());
-	menus.push_back(men);
-	return men;
-}
-GUI::Menu* GUI::Manager::getMenu(int id)
-{
-	return menus[id];
-}
-
-void GUI::Manager::loadGfxFolder(const char* dir, GFX_ID::en id)
-{
-	ALLEGRO_PATH* path = al_create_path(dir);
-	res.loadGfxFolder(path,id);
-	al_destroy_path(path);
+	if (id < 0)
+	{
+		id = _widget.size() - id;
+	}
+	if (id >= int (_widget.size()))
+	{
+		id = id % _widget.size();
+	}
+	return _widget[id];
 }
 
-void GUI::Manager::setGfxIdSize(GFX_ID::en size)
+GUI::Widget* GUI::Manager::widget (GUI::Widget* w)
 {
-	res.setGfxIdSize(size);
+	w->id (_widget.size());
+	_widget.push_back (w);
+	return w;
 }
 
-GUI::Widget* GUI::Manager::getWidget(int mid, int wid)
+void GUI::Manager::loadGfxFolder (const char* dir, GFX_ID::en id)
 {
-	return getMenu(mid)->getWidget(wid);
+	ALLEGRO_PATH* path = al_create_path (dir);
+	res.loadGfxFolder (path, id);
+	al_destroy_path (path);
+}
+
+void GUI::Manager::gfxIdSize (GFX_ID::en size)
+{
+	res.setGfxIdSize (size);
 }

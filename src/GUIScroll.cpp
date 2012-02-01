@@ -1,18 +1,16 @@
 
 #include "GUIGlobals.h"
 
-GUI::Scroll::Scroll (GBox b, int v, int m, int f, int bH)
+GUI::Scroll::Scroll (GBox b, int v, int m, int f, int bH) : _timer(NULL), _increase(NULL), _decrease(NULL)
 {
-	init();
 	_rot = f & FLAG::SCROLL_HORIZONTAL;
 	_flip = f & FLAG::SCROLL_FLIP;
-	_timer = NULL;
 	max (m);
 	value (v);
 
 	_buttonHeight = bH ;
-	_increase = new Button (GBox (0, 0, 0, 0), NULL, NULL, al_map_rgb (0, 0, 0));
-	_decrease = new Button (GBox (0, 0, 0, 0), NULL, NULL, al_map_rgb (0, 0, 0));
+	_increase = new Button (GBox (), NULL, NULL, al_map_rgb (0, 0, 0));
+	_decrease = new Button (GBox (), NULL, NULL, al_map_rgb (0, 0, 0));
 	_increase->id (1);
 	_decrease->id (2);
 	box(b);
@@ -21,6 +19,15 @@ GUI::Scroll::~Scroll()
 {
 	delete _decrease;
 	delete _increase;
+}
+
+void GUI::Scroll::box (GBox b)
+{
+	_box = b;
+	_increase->box (GBox (_box.x, _box.y, _rot ? _buttonHeight : _box.w, _rot ? _box.h : _buttonHeight));
+	_decrease->box (GBox (_rot ? _box.x + _box.w - _buttonHeight : _box.x, _rot ? _box.y : _box.y + _box.h - _buttonHeight, _rot ? _buttonHeight : _box.w, _rot ? _box.h : _buttonHeight));
+	(_rot ? _box.x : _box.y) += _buttonHeight;
+	(_rot ? _box.w : _box.h) -= _buttonHeight * 2;
 }
 
 void GUI::Scroll::draw (GBox menupos, Resource& res)
