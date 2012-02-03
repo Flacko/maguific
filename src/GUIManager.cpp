@@ -14,17 +14,17 @@ GUI::Manager::~Manager()
 
 void GUI::Manager::draw()
 {
-	for (std::vector<GUI::Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
+	for (std::vector<Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
 	{
-		(*it)->draw (GUI::GBox(), res);
+		(*it)->draw (GBox(), res);
 	}
 }
 
 GUI::Input* GUI::Manager::getInput (ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq)
 {
-	for (std::vector<GUI::Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
+	for (std::vector<Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
 	{
-		GUI::Input* in = (*it)->getInput (GBox(), res, ev, eq);
+		Input* in = (*it)->getInput (GBox(), res, ev, eq);
 		if (in)
 		{
 			return in;

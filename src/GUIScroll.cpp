@@ -1,7 +1,8 @@
 
+#include <cstdio>
 #include "GUIGlobals.h"
 
-GUI::Scroll::Scroll (GBox b, int v, int m, int f, int bH) : _timer(NULL), _increase(NULL), _decrease(NULL)
+GUI::Scroll::Scroll (GBox b, int v, int m, int bH, int f) : _timer(NULL), _increase(NULL), _decrease(NULL)
 {
 	_rot = f & FLAG::SCROLL_HORIZONTAL;
 	_flip = f & FLAG::SCROLL_FLIP;
@@ -21,6 +22,31 @@ GUI::Scroll::~Scroll()
 	delete _increase;
 }
 
+GUI::WIDGET_TYPE::en GUI::Scroll::type() const
+{
+	return WIDGET_TYPE::SCROLL;
+}
+int GUI::Scroll::value() const
+{
+	return (_flip ? _max - _value : _value);
+}
+int GUI::Scroll::max() const
+{
+	return _max;
+}
+int GUI::Scroll::buttonHeight() const
+{
+	return _buttonHeight;
+}
+
+GUI::GBox GUI::Scroll::box() const
+{
+	GBox b = _box;
+	(_rot?b.x:b.y) -= _buttonHeight;
+	(_rot?b.w:b.h) += _buttonHeight*2;
+	return b;
+}
+
 void GUI::Scroll::box (GBox b)
 {
 	_box = b;
@@ -28,6 +54,33 @@ void GUI::Scroll::box (GBox b)
 	_decrease->box (GBox (_rot ? _box.x + _box.w - _buttonHeight : _box.x, _rot ? _box.y : _box.y + _box.h - _buttonHeight, _rot ? _buttonHeight : _box.w, _rot ? _box.h : _buttonHeight));
 	(_rot ? _box.x : _box.y) += _buttonHeight;
 	(_rot ? _box.w : _box.h) -= _buttonHeight * 2;
+}
+
+void GUI::Scroll::value (int v)
+{
+	_value = (_flip? _max - v : v);
+	if(_value > _max) _value = _max;
+	if(_value < 0) _value = 0;
+	printf("value: %i\n", _value);
+}
+void GUI::Scroll::max (int m)
+{
+	if(m < 0) m = 0;
+	_max = m;
+}
+void GUI::Scroll::buttonHeight (int bh)
+{
+	_buttonHeight = bh;
+	box (box());
+}
+
+void GUI::Scroll::increase()
+{
+	value(value() + 1 );
+}
+void GUI::Scroll::decrease()
+{
+	value(value() - 1 );
 }
 
 void GUI::Scroll::draw (GBox menupos, Resource& res)
@@ -54,16 +107,16 @@ void GUI::Scroll::draw (GBox menupos, Resource& res)
 	float gripHeight = float (_rot ? dbox.w : dbox.h) / _max;
 	float minGripHeight = std::max (BH (BMP (cr_bl)) + BH (BMP (cr_tl)), BH (BMP (cr_tr)) + BH (BMP (cr_br)));
 	if (gripHeight < minGripHeight) gripHeight = minGripHeight;
-	GBox grip (dbox.x, dbox.y, _rot ? gripHeight : dbox.w, _rot ? dbox.h : gripHeight);
+	GBox grip (dbox.x, dbox.y, (_rot ? gripHeight : dbox.w), (_rot ? dbox.h : gripHeight) );
 	(_rot ? dbox.w : dbox.h) -= gripHeight;
-	(_rot ? grip.x : grip.y) = (_rot ? (dbox.x + dbox.w) : (dbox.y + dbox.h)) - float (_value) / float (_max) * (_rot ? dbox.w : dbox.h);
+	(_rot ? grip.x : grip.y) = (_rot ? (dbox.x + dbox.w) : (dbox.y + dbox.h)) - float (value()) / float (_max) * (_rot ? dbox.w : dbox.h);
 	fillBox (grip, BMP (bd_t), BMP (bd_r), BMP (bd_b), BMP (bd_l), BMP (cr_tl), BMP (cr_tr), BMP (cr_br), BMP (cr_bl), BMP (bg), 0);
 #undef BMP
 }
 
 GUI::Input* GUI::Scroll::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq)
 {
-	GBox colbox (_box >> menupos);
+	GBox colbox (_box);
 
 	Input* in = _increase->getInput (menupos, res, ev, eq) ? : _decrease->getInput (menupos, res, ev, eq);
 	if (in)
@@ -77,8 +130,10 @@ GUI::Input* GUI::Scroll::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& e
 				_timer = NULL;
 			}
 			selected = false;
+			delete in;
+			return r;
 		}
-		if (in->type() == INPUT_TYPE::MOUSE_DOWN)
+		else if (in->type() == INPUT_TYPE::MOUSE_DOWN)
 		{
 			selected = in->widget()->id();
 			if (_timer)
@@ -91,9 +146,10 @@ GUI::Input* GUI::Scroll::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& e
 			al_start_timer (_timer);
 			if (selected == 1) increase();
 			else if (selected == 2) decrease();
+			delete in;
+			return r;
 		}
 		delete in;
-		return r;
 	}
 
 	if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
@@ -101,7 +157,7 @@ GUI::Input* GUI::Scroll::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& e
 		if (selected)
 		{
 			selected = false;
-			if (colbox.collides (GPoint (ev.mouse.x, ev.mouse.y)))
+			if (colbox.collides (GPoint (ev.mouse.x-menupos.x, ev.mouse.y-menupos.y)))
 			{
 				return new Input (INPUT_TYPE::MOUSE_RELEASE, this, NULL);
 			}
@@ -110,11 +166,11 @@ GUI::Input* GUI::Scroll::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& e
 	}
 	else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
 	{
-		GPoint mouse (ev.mouse.x, ev.mouse.y);
+		GPoint mouse (ev.mouse.x-menupos.x, ev.mouse.y-menupos.y);
 		if (colbox.collides (mouse))
 		{
 			selected = 3;
-			_value = _max - float (_rot ? (mouse.x - colbox.x) : (mouse.y - colbox.y)) / (_rot ? colbox.w : colbox.h) * _max;
+			value (_max - float (_rot ? (mouse.x - colbox.x) : (mouse.y - colbox.y)) / (_rot ? colbox.w : colbox.h) * _max);
 			return new Input (INPUT_TYPE::MOUSE_DOWN, this, NULL);
 		}
 	}
@@ -129,14 +185,12 @@ GUI::Input* GUI::Scroll::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& e
 	}
 	else if (ev.type == ALLEGRO_EVENT_MOUSE_AXES)
 	{
-		GPoint mouse(ev.mouse.x, ev.mouse.y);
+		GPoint mouse(ev.mouse.x-menupos.x, ev.mouse.y-menupos.y);
 		if (selected)
 		{
 			if (selected == 3)
 			{
-				_value = _max - float (_rot ? (mouse.x - colbox.x) : (mouse.y - colbox.y)) / (_rot ? colbox.w : colbox.h) * _max;
-				if(_value > _max) _value = _max;
-				else if(_value < 0) _value = 0;
+				value (_max - float (_rot ? (mouse.x - colbox.x) : (mouse.y - colbox.y)) / (_rot ? colbox.w : colbox.h) * _max);
 				return new Input (INPUT_TYPE::MOUSE_DRAG, this, NULL);
 			}
 		}
@@ -144,7 +198,7 @@ GUI::Input* GUI::Scroll::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& e
 		{
 			if(hover)
 			{
-				if( !(colbox.collides(mouse) && _increase->box().collides(mouse) && _decrease->box().collides(mouse)) )
+				if( !( colbox.collides(mouse) || _increase->box().collides(mouse) || _decrease->box().collides(mouse) ) )
 				{
 					hover = false;
 					return new Input(INPUT_TYPE::MOUSE_LEAVE, this, NULL);
@@ -152,7 +206,7 @@ GUI::Input* GUI::Scroll::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& e
 			}
 			else
 			{
-				if(colbox.collides(mouse) || _increase->box().collides(mouse) || _decrease->box().collides(mouse))
+				if(colbox.collides(mouse) || _increase->box().collides(mouse) || _decrease->box().collides(mouse) )
 				{
 					hover = true;
 					return new Input(INPUT_TYPE::MOUSE_HOVER, this, NULL);

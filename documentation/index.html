@@ -1,0 +1,412 @@
+<html>
+	<head>
+		<script type="text/javascript" src="syntax.js"></script>
+		<link rel="stylesheet" type="text/css" href="style.css">
+	</head>
+	<body style="width: auto; height: auto; background-color: #FFFFFF; margin: 0 0;">
+		<div id="index" style="display: block; width: 270px; height: 100%; background-color: #000000; position: fixed; float: left; padding: 15px 0 0 15px;">
+			<a href="#ref-introduction" style="font-size: 1.1em;">Introduction</a>
+			<ul>
+				<span class="label">The Basics</span>
+				<li>
+					<a href="#ref-intro-requirements">Requirements</a>
+				</li>
+				<li>
+					<a href="#ref-intro-intro">Introduction</a>
+				</li>
+				<li>
+					<a href="#ref-intro-event">Event Handling</a>
+				</li>
+			</ul>
+			<ul>
+				<span class="label">Advanced</span>
+				<li>
+					<a href="#ref-intro-init">Extending</a>
+				</li>
+			</ul>
+
+			<a href="#ref-gui" style="font-size: 1.1em;">The GUI Namespace</a>
+			<ul>
+				<span class="label">Classes</span>
+				<li>
+					<a href="#ref-gui-manager">GUI::Manager</a>
+				</li>
+				<li>
+					<a href="#ref-gui-widget">GUI::Widget</a>
+					<ul>
+						<li>
+							<a href="#ref-gui-menu">GUI::Menu</a>
+						</li>
+						<li>
+							<a href="#ref-gui-button">GUI::Button</a>
+						</li>
+						<li>
+							<a href="#ref-gui-checkbox">GUI::CheckBox</a>
+						</li>
+						<li>
+							<a href="#ref-gui-scroll">GUI::Scroll</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="#ref-gui-input">GUI::Input</a>
+				</li>
+				<li>
+					<a href="#ref-gui-resource">GUI::Resource</a>
+				</li>
+			</ul>
+			<ul>
+				<span class="label">Enumerations</span>
+				<li>
+					<a href="#ref-gui-input-type">GUI::INPUT_TYPE</a>
+				</li>
+				<li>
+					<a href="#ref-gui-widget-type">GUI::WIDGET_TYPE</a>
+				</li>
+				<li>
+					<a href="#ref-gui-gfx-id">GUI::GFX_ID</a>
+				</li>
+				<li>
+					<a href="#ref-gui-gfx-flag">GUI::GFX_FLAG</a>
+				</li>
+			</ul>
+			<ul>
+				<span class="label">Geometry</span>
+				<li>
+					<a href="#ref-gui-gpoint">GUI::GPoint</a>
+				</li>
+				<li>
+					<a href="#ref-gui-gbox">GUI::GBox</a>
+				</li>
+			</ul>
+		</div>
+		<div id="content" style="margin-left: 300px; width: 720px; float: left;">
+			<div id="ref-intro-requirements" class="doc-title">Requirements</div>
+			The only requirements to compile using the GUI System (besides having Allegro5.0.5 installed) are described in the compiling.txt file that you will find in this folder.
+			
+			<div id="ref-intro-intro" class="doc-title">Introduction</div>
+			The purpose of this library is to make creating game GUIs much easier in Allegro5.<br />
+			This project is still under (heavy) developement so it make take drastical changes during it's WIP stage.
+			<br /><br />
+			
+			The first thing you should do is include the GUIGlobals.h file
+			<div class="codeblock">#include &lt;maguific/GUIGlobals.h&gt;</div>
+			<br />
+			In your main function you will have to create a GUI::Manager object instance
+			<div class="codeblock">GUI::Manager gui;</div>
+			<br>
+			Then, you will want to load the graphical resources needed for the default widgets and a font for the purpose of this tutorial:
+			<div class="codeblock">/*Load the graphical resources needed from these folders*/
+gui.loadGfxFolder("gfx/gui/menu/",GUI::GFX_ID::MENU);
+gui.loadGfxFolder("gfx/gui/button/",GUI::GFX_ID::BUTTON);
+gui.loadGfxFolder("gfx/gui/checkbox/",GUI::GFX_ID::CHECKBOX);
+gui.loadGfxFolder("gfx/gui/scrollbar/",GUI::GFX_ID::SCROLL_BAR);
+gui.loadGfxFolder("gfx/gui/scrollbutton/",GUI::GFX_ID::SCROLL_BUTTON);
+gui.loadGfxFolder("gfx/gui/scrollgrip/",GUI::GFX_ID::SCROLL_GRIP);
+
+/*Load ariblk.ttf file, set size to 12px without flags*/
+ALLEGRO_FONT* f = al_load_font("font/ariblk.ttf",12,0);</div>
+			<br />
+			Now we have to add a menu to our GUI Manager object. Think of a menu as a window that will store the widgets. To initialize it we just need a GBox instance.
+			<div class="codeblock">GUI::Menu* men = gui.addMenu(
+	new GUI::Menu(GUI::GBox(100,100,300,450))
+);</div>
+			As you can see, we manually created a GUI::Menu object and pushed it to our GUI::Manager class. Our manager returns back this recently created menu ready for being used as you wish.<br />
+			Note that you shouldn't use a menu without pushing it into the manager first as this is necessary to configure the menu's id (although it still works on it's own)
+			<br /><br />
+			The procedure for adding widgets is mostly analog, although different widgets require different parameters for their constructors:
+<div class="codeblock">
+GUI::Button* but = men->addWidget(
+	new GUI::Button(
+		GUI::GBox(100,100,105,25),
+		f,
+		al_ustr_new("HELLO WORLD") /*allegro UTF-8 string*/
+	)
+);</div>
+			This time, we used a GBox for the bounding box, and an ALLEGRO_FONT* with an ALLEGRO_USTR for the button's caption.<br />
+			Note that the widget is being pushed to our Menu, not to the Manager.<br />
+			Just like with the menu, a widget won't be complete as soon as it's created. You will need to push it to a menu.<br />
+			<br />
+			The drawing code is dramatically easier to handle:
+<div class="codeblock">gui.draw();</div>
+			Just call it once per frame
+
+<div id="ref-intro-event" class="doc-title">Event Handling</div>
+The event handling works through Allegro events, so it may look bloated with so many if-sentences:
+<div class="codeblock">while(!exit)
+{
+	ALLEGRO_EVENT event;
+	if(al_get_next_event(event_queue, &amp;event))
+	{
+		GUI::Input* input = gui.getInput(event, event_queue);
+		if(input)
+		{
+			//make sure that the type of the interacting widget is a button
+			if(input->widget()->type() == GUI::WIDGET_TYPE::BUTTON)
+			{
+				GUI::Button* button = (GUI::Button*)input->widget();
+				//Mouse down means the mouse was pressed on the button
+				if(input->type() == GUI::INPUT_TYPE::MOUSE_DOWN)
+				{
+					//make the letters red
+					button->fontColor(al_map_rgb(0xFF,0x00,0x00));
+				}
+				//mouse up means that the mouse was pressed on the button, but released outside of it
+				//mouse click means that the mouse was pressed and released on the button
+				else if(input->type() == GUI::INPUT_TYPE::MOUSE_UP or input->type() == GUI::INPUT_TYPE::MOUSE_RELEASE)
+				{
+					//make the letters white
+					button->fontColor(al_map_rgb(0xFF,0xFF,0xFF));
+				}
+			}
+			//delete the pointer
+			delete input;
+			input = NULL;
+		}
+	}
+}</div>
+			Although it may look messy, it's purpose is simple:<br />
+			<ul>
+				<li>First get the GUI Input by passing the ALLEGRO_EVENT and the ALLEGRO_EVENT_QUEUE to the GUI Manager which passes it to the menus and then to the widgets.</li>
+				<li>There can only be one (or none) GUI::Input for each ALLEGRO_EVENT so after getting the Input we make sure it's a valid one checking if the pointer is NULL.</li>
+				<li>In the next line we make sure the interacting widget is a Button object.</li>
+				<li>GUI::Input class carries a GUI::Widget object, not a GUI::Button, so we type-casted it in order to do some specific stuff such as changing the button's label or font color.</li>
+				<li>What we are doing next is just colorize the Button when the mouse is pressed over it with the MOUSE_DOWN input. And give it back it's old color when the mouse is released (be it outside the Button with the MOUSE_UP event or inside it with MOUSE_RELEASE)</li>
+				<li>Finally, we deal with the GUI::Input pointer. Do not forget to delete the pointer, or use an auto_ptr instead.</li>
+			</ul>
+
+			<div id="ref-gui-manager" class="doc-title">GUI::Manager</div>
+
+			<div class="codeblock">Manager();
+~Manager();</div>
+			Creates and destroys the Manager class. <br />
+			Calling the destructor destroys all the widgets and menus attached.
+
+			<div class="codeblock">void gfxIdSize (GFX_ID::en);</div>
+			This function is used to increase the size of the sprite vector.<br />
+			You should call it when creating a new widget that requires additional sprites.<br />
+			You should call this function using an inherited class from GFX_ID.
+
+			<div class="codeblock">void loadGfxFolder (const char* dir, GFX_ID::en id);</div>
+			Loads the following sprites from the given directory in the following order:
+			<ul>
+				<li>bd_t.bmp (top border)</li>
+				<li>bd_r.bmp (right border)</li>
+				<li>bd_b.bmp (bottom border)</li>
+				<li>bd_l.bmp (left border)</li>
+				<li>cr_tl.bmp (top-left corner)</li>
+				<li>cr_tr.bmp (top-right corner)</li>
+				<li>cr_br.bmp (bottom-right corner)</li>
+				<li>cr_bl.bmp (bottom-left corner)</li>
+				<li>bg.bmp (background)</li>
+				<li>fg.bmp (foreground)</li>
+			</ul>
+			The bitmap pointers are stored in the vector in that same order counting from the given offset. Therefore a call to manager.loadGfxFolder("gfx/gui/button",GUI::GFX_ID::BUTTON) will store bd_t in the GUI::GFX_ID::button_bd_t index
+
+			<div class="codeblock">Widget* widget (int id) const;</div>
+			Returns the widget with the given id from the array.
+
+			<div class="codeblock">Widget* widget (Widget* w);</div>
+			Pushes the given widget into the array and returns it.<br />
+			The widget doesn't need to be a Menu.
+
+			<div class="codeblock">void draw();</div>
+			Draws all the widgets.
+
+			<div class="codeblock">Input* getInput (ALLEGRO_EVENT&amp; ev, ALLEGRO_EVENT_QUEUE* eq);</div>
+			Returns an Input class pointer from the supplied allegro event. <br />
+			It's possible to return a null pointer if none of the widgets recieved any kind of interaction.
+			
+			<div id="ref-gui-widget" class="doc-title">GUI::Widget</div>
+			<div class="codeblock">Widget();</div>
+			The constructor sets the widget id to -1, and makes the foreground and background color white. This is called for all inheriting classes.
+			<div class="codeblock">void setColors (ALLEGRO_COLOR fore, ALLEGRO_COLOR back));</div>
+			Sets foreColor and backColor to the given ones.
+			<div class="codeblock">virtual WIDGET_TYPE::en type() const;</div>
+			Returns WIDGET_TYPE::NONE. Inheriting widgets should return other values.
+			
+			<div class="codeblock">virtual int id() const;</div>
+			Returns the widget's id (this id can be set either by the Manager or a Menu)
+			
+			<div class="codeblock">virtual GBox box() const;</div>
+			Returns the widget's bounding box.
+			
+			<div class="codeblock">virtual void id (int i);</div>
+			Sets the widget's id.
+			
+			<div class="codeblock">virtual void box (GBox b);</div>
+			Sets the widget's bounding box
+			
+			<div class="codeblock">virtual void draw (GBox menupos, Resource&amp; res);</div>
+			Draws a rectangle with the foreground color. The rectangle's dimensions are the same as the box member although the menupos coordinates are added to the x and y components.<br />
+			Any inheriting widget should overload this function.
+			
+			<div class="codeblock">virtual Input* getInput (GBox menupos, Resource&amp; res, ALLEGRO_EVENT&amp;, ALLEGRO_EVENT_QUEUE*);</div>
+			Returns a NULL pointer. Any inheriting widget should overload this function to return an Input* pointer corresponding to the ALLEGRO_EVENT passed.
+			
+			<div class="codeblock">protected:
+	void fillBox (GBox box, ALLEGRO_BITMAP* bd_t, ALLEGRO_BITMAP* bd_r, ALLEGRO_BITMAP* bd_b, ALLEGRO_BITMAP* bd_l, ALLEGRO_BITMAP* cr_tl, ALLEGRO_BITMAP* cr_tr, ALLEGRO_BITMAP* cr_br, ALLEGRO_BITMAP* cr_bl, ALLEGRO_BITMAP* bg, int flags);</div>
+			Draws a box using the bitmaps given. This function specially takes care not to draw under the corners or borders. Therefore you can use transparency in your sprites.<br />
+			This function also supports any combination of the following flags:
+			<ul>
+				<li><span class="highlight-code">GFX_FLAG::FILLBOX_FLIP_V</span> Exchanges the top and bottom borders, as well as the top(left/right) and bottom(left/right) corners</li>
+				<li><span class="highlight-code">GFX_FLAG::FILLBOX_FLIP_H</span> Exchanges the left and right borders, as well as the left(top/bottom) and right(top/bottom) corners</li>
+				<li><span class="highlight-code">GFX_FLAG::FILLBOX_ROTATE</span> Draws the borders and corners rotated 45 degrees to the right within the box's bounds and swaps them accordingly</li>
+			</ul>
+			
+			<div class="codeblock">protected:
+	char selected;
+	char hover;</div>
+			You can use this variables as flags for the inheriting widgets.
+			<ul>
+				<li><span class="highlight-code">selected</span> is usually triggered when the mouse button is pressed over the widget's box. This way you know when to return a MOUSE_RELEASE or a MOUSE_UP input (or no input at all)</li>
+				<li><span class="highlight-code">hover</span> is triggered when the mouse enters the widget's bounding box. Use it to return MOUSE_HOVER and MOUSE_LEAVE inputs.</li>
+				<li>You can use both at the same time to return MOUSE_DRAG inputs</li>
+			</ul>
+			
+			<div id="ref-gui-menu" class="doc-title">GUI::Menu</div>
+			GUI::Menu inherits from GUI::Widget, so it shares most member functions.
+
+			<div class="codeblock">Menu (GBox b);
+~Menu();</div>
+			The constructor only sets the menu's box (besides calling the parent constructor). The destructor destroys all the attached widgets.
+			
+			<div class="codeblock">WIDGET_TYPE::en type() const;</div>
+			Returns WIDGET_TYPE::MENU.
+			
+			<div class="codeblock">Widget* widget (int wid) const;</div>
+			Returns the widget that is stored in the given offset.
+			
+			<div class="codeblock">Widget* widget (Widget* w);</div>
+			Pushes the given widget into the vector and returns it after setting it's id.
+			
+			<div class="codeblock">void draw (GBox menupos, Resource&amp; res);</div>
+			Draws this widget calling fillBox without any flags and using the GFX_ID::menu_* family of sprites.<br />
+			All the attached widgets' draw() function is called too.
+			
+			<div class="codeblock">Input* getInput (GBox menupos, Resource&amp; res, ALLEGRO_EVENT&amp; ev, ALLEGRO_EVENT_QUEUE* eq);</div>
+			Returns an Input pointer. It can correspond to any of the widgets attached or to the menu itself.
+			
+			<div id="ref-gui-button" class="doc-title">GUI::Button</div>
+			
+			<div class="codeblock">Button (GBox b, ALLEGRO_FONT* f, ALLEGRO_USTR* l, ALLEGRO_COLOR fC);
+~Button();</div>
+			The constructor takes four parameters: The bounding box, the font, the label and the fontColor.<br />
+			The destructor destroys the label with al_ustr_free().
+			
+			<div class="codeblock">void label (ALLEGRO_USTR* l);
+ALLEGRO_USTR* label() const;</div>
+The first function sets the button's label. If the button already has a label it's destroyed before setting the new one.<br />
+The second function returns the button's label.
+
+			<div class="codeblock">void font (ALLEGRO_FONT* f);
+ALLEGRO_FONT* font() const;</div>
+			The first function sets the font used to render the label. If the font is already set it's not destroyed.<br />
+			The second function returns the font.
+
+			<div class="codeblock">void fontColor (ALLEGRO_COLOR fC);
+ALLEGRO_COLOR fontColor() const;</div>
+			Sets and returns the font color used to render the label.
+
+			<div class="codeblock">void draw (GBox, Resource&amp;);</div>
+			Draws a box using the GFX_ID::button_* sprites and draws the label right in the center of the box.
+			
+			<div class="codeblock">Input* getInput (GBox, Resource&amp;, ALLEGRO_EVENT&amp;, ALLEGRO_EVENT_QUEUE*);</div>
+			Returns an Input pointer that can have the following types:
+			<ul>
+				<li><span class="highlight-code">MOUSE_DOWN</span> When the mouse is pressed over the bounding box.</li>
+				<li><span class="highlight-code">MOUSE_RELEASE</span> When the mouse is released over the bounding box.</li>
+				<li><span class="highlight-code">MOUSE_UP</span> When the mouse is released outside the bounding box but it was pressed in it.</li>
+				<li><span class="highlight-code">MOUSE_HOVER</span> When the mouse moves over the bounding box.</li>
+				<li><span class="highlight-code">MOUSE_UP</span> When the mouse leaves the bounding box.</li>
+			</ul>
+			If there's no interaction with the button, a NULL pointer will be returned.
+			
+			<div id="ref-gui-checkbox" class="doc-title">GUI::CheckBox</div>
+			
+			<div class="codeblock">CheckBox (GBox b, bool v);</div>
+			Sets the widget's bounding box and defaults it's value with the one given in the second parameter.
+			
+			<div class="codeblock">WIDGET_TYPE::en type() const;</div>
+			Returns WIDGET_TYPE::CHECKBOX
+			
+			<div class="codeblock">void value (bool v);
+bool value() const;</div>
+			Sets and returns the stored value.
+
+			<div class="codeblock">void draw (GBox menupos, Resource&amp; res);</div>
+			Draws GFX_ID::checkbox_bg in the top-left position of it's box.<br />
+			The drawing size doesn't scale with the bounding box unlike other widgets.<br />
+			If the stored value is true, it draws the GFX_ID::checkbox_fg in the center of the background.
+			
+			<div class="codeblock">Input* getInput (GBox menupos, Resource&amp; res, ALLEGRO_EVENT&amp; ev, ALLEGRO_EVENT_QUEUE*);</div>
+			Behaves the same way as the Button widget. However, it changes it's value when it emmits a MOUSE_RELEASE Input.<br />
+			Note that although the drawing doesn't scale with the bounding box size, the Input does. This way the user can toggle the checkbox by clicking in an adjacent widget (ie: a dummy label)
+
+			<div id="ref-gui-scroll" class="doc-title">GUI::Scroll</div>
+			The Scroll widget relies on the Button widget, so take care when editing the source code.
+			
+			<div class="codeblock">Scroll (GBox b, int v, int m, int bH, int f);
+~Scroll();</div>
+			The constructor does the following:
+			<ul>
+				<li>Sets the scroll's bounding box using b.</li>
+				<li>Defaults it's value to v.</li>
+				<li>Sets the max value that v can take as m.</li>
+				<li>Sets the button's height as bH. These buttons are the increase/decrease buttons that are in the corners of the scroll.</li>
+				<li>
+					Sets the flags using f. The flags can be any combination of the following two:
+					<ul>
+						<li><span class="highlight-code">FLAG::SCROLL_HORIZONTAL</span> aligns the scrollbar horizontally. This means that the scroll will move from right to left (instead from bottom to top)</li>
+						<li><span class="highlight-code">FLAG::SCROLL_FLIP</span> flips the scrollbar, this means that the value will increase towards the bottom (or the right, if the HORIZONTAL flag is set)</li>
+					</ul>
+				</li>
+			</ul>
+			The destructor deletes two pointers to Button widgets that are used as the increase/decrease buttons.
+			
+			<div class="codeblock">WIDGET_TYPE::en type() const;</div>
+			Returns WIDGET_TYPE::SCROLL
+			
+			<div class="codeblock">void value (int v);
+int value() const;</div>
+			The first function sets the scroll value to the given one (making sure that it cannot go beyond the max value it can take and it won't allow negative values either)<br />
+			The second function will return the current value.
+			
+			<div class="codeblock">void max (int m);
+int max() const;</div>
+			These functions set and return the max value the scroll can take. Note that the scroll value will never be lower than 0 nor bigger than the max value.<br />
+			The max value can't be lower than 0 either.
+			
+			<div class="codeblock">void buttonHeight (int bh);
+int buttonHeight() const;</div>
+			These functions set and return the button height for the buttons in the corners.
+
+			<div class="codeblock">void box (GBox b);
+GBox box() const;</div>
+			These functions set and return the bounding box. The increase/decrease buttons are placed inside the bounding box too.
+			
+			<div class="codeblock">void increase();
+void decrease();</div>
+			Increase/decrease the current scroll value by 1.
+
+			<div class="codeblock">void draw (GBox menupos, Resource&amp; res);</div>
+			Draws the widget.
+			<div class="codeblock">Input* getInput (GBox menupos, Resource&amp; res, ALLEGRO_EVENT&amp; ev, ALLEGRO_EVENT_QUEUE* eq);</div>
+			Returns an Input pointer. This function behaves like the Button widget, however, it also returns the following Inputs:
+			<ul>
+				<li><span class="highlight-code">MOUSE_HOLD</span> When the mouse is pressed and is being held over one of the increse/decrease buttons, causing the scroll value to increase or decrease.</li>
+				<li><span class="highlight-code">MOUSE_DRAG</span> When the mouse is pressed on the scroll bar and is being moved inside it.</li>
+			</ul>
+	</body>
+	<script type="text/javascript">
+		function highlighter()
+		{
+			var arr = document.getElementsByClassName("codeblock");
+			for(var i=0; i<arr.length; i++)
+			{
+				highlightSyntax(arr[i]);
+			}
+		}
+		highlighter();
+	</script>
+</html>

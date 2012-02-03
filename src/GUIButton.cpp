@@ -15,10 +15,44 @@ GUI::Button::~Button()
 	_font = NULL;
 }
 
+GUI::WIDGET_TYPE::en GUI::Button::type() const
+{
+	return WIDGET_TYPE::BUTTON;
+}
+
+void GUI::Button::label (ALLEGRO_USTR* l)
+{
+	if (_label) al_ustr_free (_label);
+	_label = l;
+}
+
+void GUI::Button::font (ALLEGRO_FONT* f)
+{
+	_font = f;
+}
+
+void GUI::Button::fontColor (ALLEGRO_COLOR fC)
+{
+	_fontColor = fC;
+}
+
+ALLEGRO_USTR* GUI::Button::label() const
+{
+	return _label;
+}
+ALLEGRO_FONT* GUI::Button::font() const
+{
+	return _font;
+}
+ALLEGRO_COLOR GUI::Button::fontColor() const
+{
+	return _fontColor;
+}
+
 void GUI::Button::draw (GBox menupos, Resource& res)
 {
 	GBox dbox (box() >> menupos);
-#define BMP(x) res.getGfx(GUI::GFX_ID::button_##x)
+#define BMP(x) res.getGfx(GFX_ID::button_##x)
 	fillBox (dbox, BMP (bd_t), BMP (bd_r), BMP (bd_b), BMP (bd_l), BMP (cr_tl), BMP (cr_tr), BMP (cr_br), BMP (cr_bl), BMP (bg), 0);
 #undef BMP
 	if (_label)

@@ -10,7 +10,7 @@ GUI::Widget::Widget() : _id(-1), selected(false), hover(false)
 
 GUI::WIDGET_TYPE::en GUI::Widget::type() const
 {
-	return GUI::WIDGET_TYPE::NONE;
+	return WIDGET_TYPE::NONE;
 }
 
 int GUI::Widget::id() const

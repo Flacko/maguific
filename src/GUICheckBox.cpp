@@ -6,6 +6,22 @@ GUI::CheckBox::CheckBox (GBox b, bool v)
 	box (b);
 	value (v);
 }
+
+GUI::WIDGET_TYPE::en GUI::CheckBox::type() const
+{
+	return WIDGET_TYPE::CHECKBOX;
+}
+
+void GUI::CheckBox::value (bool v)
+{
+	_value = v;
+}
+
+bool GUI::CheckBox::value() const
+{
+	return _value;
+}
+
 void GUI::CheckBox::draw (GBox menupos, Resource& res)
 {
 	GBox dbox (box() >> menupos);
