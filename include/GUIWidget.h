@@ -6,6 +6,8 @@ class DLL_EXPORT Widget
 {
 	public:
 		Widget();
+		virtual ~Widget();
+
 		void setColors (ALLEGRO_COLOR fore, ALLEGRO_COLOR back);
 
 		virtual WIDGET_TYPE::en type() const;

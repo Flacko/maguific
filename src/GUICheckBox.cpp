@@ -6,6 +6,10 @@ GUI::CheckBox::CheckBox (GBox b, bool v)
 	box (b);
 	value (v);
 }
+GUI::CheckBox::~CheckBox()
+{
+
+}
 
 GUI::WIDGET_TYPE::en GUI::CheckBox::type() const
 {

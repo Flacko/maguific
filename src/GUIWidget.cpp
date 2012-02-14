@@ -1,11 +1,13 @@
 
-#include <cstdio>
 #include "GUIGlobals.h"
 
-GUI::Widget::Widget() : _id(-1), selected(false), hover(false)
+GUI::Widget::Widget() : _id (-1), selected (false), hover (false)
 {
-	foreColor = al_map_rgb(0xFF,0xFF,0xFF);
-	backColor = al_map_rgb(0xFF,0xFF,0xFF);
+	foreColor = al_map_rgb (0xFF, 0xFF, 0xFF);
+	backColor = al_map_rgb (0xFF, 0xFF, 0xFF);
+}
+GUI::Widget::~Widget()
+{
 }
 
 GUI::WIDGET_TYPE::en GUI::Widget::type() const

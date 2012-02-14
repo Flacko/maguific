@@ -6,6 +6,7 @@ class DLL_EXPORT CheckBox : public Widget
 {
 	public:
 		CheckBox (GBox b, bool v);
+		~CheckBox();
 
 		WIDGET_TYPE::en type() const;
 

@@ -7,6 +7,11 @@ GUI::Menu::Menu (GBox _box)
 }
 GUI::Menu::~Menu()
 {
+	for (std::vector<Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
+	{
+		delete (*it);
+		(*it) = NULL;
+	}
 	_widget.clear();
 }
 GUI::WIDGET_TYPE::en GUI::Menu::type() const
@@ -32,57 +37,57 @@ GUI::Input* GUI::Menu::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& ev,
 		GUI::Input* in = (*it)->getInput (box(), res, ev, eq);
 		if (in)
 		{
-			if(in->menu() == NULL)
+			if (in->menu() == NULL)
 			{
 				in->menu (this);
 			}
 			return in;
 		}
 	}
-	if(ev.type == ALLEGRO_EVENT_MOUSE_AXES)
+	if (ev.type == ALLEGRO_EVENT_MOUSE_AXES)
 	{
-		GPoint mouse(ev.mouse.x-menupos.x, ev.mouse.y-menupos.y);
-		bool collides = _box.collides(mouse);
-		if(hover)
+		GPoint mouse (ev.mouse.x - menupos.x, ev.mouse.y - menupos.y);
+		bool collides = _box.collides (mouse);
+		if (hover)
 		{
-			if(!collides)
+			if (!collides)
 			{
 				hover = false;
-				return new Input(INPUT_TYPE::MOUSE_LEAVE, this, NULL);
+				return new Input (INPUT_TYPE::MOUSE_LEAVE, this, NULL);
 			}
 		}
-		else if(!hover)
+		else if (!hover)
 		{
-			if(collides)
+			if (collides)
 			{
 				hover = true;
-				return new Input(INPUT_TYPE::MOUSE_HOVER, this, NULL);
+				return new Input (INPUT_TYPE::MOUSE_HOVER, this, NULL);
 			}
 		}
 	}
-	else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
+	else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
 	{
-		GPoint mouse(ev.mouse.x-menupos.x, ev.mouse.y-menupos.y);
+		GPoint mouse (ev.mouse.x - menupos.x, ev.mouse.y - menupos.y);
 
-		if(_box.collides(mouse) and !selected)
+		if (_box.collides (mouse) and !selected)
 		{
 			selected = true;
-			return new Input(INPUT_TYPE::MOUSE_DOWN, this, NULL);
+			return new Input (INPUT_TYPE::MOUSE_DOWN, this, NULL);
 		}
 	}
-	else if(ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
+	else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
 	{
-		GPoint mouse(ev.mouse.x-menupos.x, ev.mouse.y-menupos.y);
-		bool collides = _box.collides(mouse);
-		if(selected)
+		GPoint mouse (ev.mouse.x - menupos.x, ev.mouse.y - menupos.y);
+		bool collides = _box.collides (mouse);
+		if (selected)
 		{
 			selected = false;
 
-			if(collides)
-				return new Input(INPUT_TYPE::MOUSE_RELEASE, this, NULL);
+			if (collides)
+				return new Input (INPUT_TYPE::MOUSE_RELEASE, this, NULL);
 
-			else if(!collides)
-				return new Input(INPUT_TYPE::MOUSE_UP, this, NULL);
+			else if (!collides)
+				return new Input (INPUT_TYPE::MOUSE_UP, this, NULL);
 		}
 	}
 	return NULL;

@@ -12,6 +12,7 @@ GUI::Button::Button (GBox b, ALLEGRO_FONT* f, ALLEGRO_USTR* l, ALLEGRO_COLOR fC)
 GUI::Button::~Button()
 {
 	if (_label) al_ustr_free (_label);
+	_label = NULL;
 	_font = NULL;
 }
 

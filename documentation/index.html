@@ -87,14 +87,12 @@
 			<div id="ref-intro-intro" class="doc-title">Introduction</div>
 			The purpose of this library is to make creating game GUIs much easier in Allegro5.<br />
 			This project is still under (heavy) developement so it make take drastical changes during it's WIP stage.
-			<br /><br />
-			
-			The first thing you should do is include the GUIGlobals.h file
+
 			<div class="codeblock">#include &lt;maguific/GUIGlobals.h&gt;</div>
-			<br />
-			In your main function you will have to create a GUI::Manager object instance
+			The first thing you should do is include the GUIGlobals.h file
+			
 			<div class="codeblock">GUI::Manager gui;</div>
-			<br>
+			In your main function you will have to create a GUI::Manager object instance.<br />
 			Then, you will want to load the graphical resources needed for the default widgets and a font for the purpose of this tutorial:
 			<div class="codeblock">/*Load the graphical resources needed from these folders*/
 gui.loadGfxFolder("gfx/gui/menu/",GUI::GFX_ID::MENU);
@@ -246,22 +244,22 @@ The event handling works through Allegro events, so it may look bloated with so 
 			
 			<div class="codeblock">protected:
 	void fillBox (GBox box, ALLEGRO_BITMAP* bd_t, ALLEGRO_BITMAP* bd_r, ALLEGRO_BITMAP* bd_b, ALLEGRO_BITMAP* bd_l, ALLEGRO_BITMAP* cr_tl, ALLEGRO_BITMAP* cr_tr, ALLEGRO_BITMAP* cr_br, ALLEGRO_BITMAP* cr_bl, ALLEGRO_BITMAP* bg, int flags);</div>
-			Draws a box using the bitmaps given. This function specially takes care not to draw under the corners or borders. Therefore you can use transparency in your sprites.<br />
+			Draws a box using the given bitmaps. This function specially takes care not to draw under the corners or borders. Therefore you can use sprites with the mask color.<br />
 			This function also supports any combination of the following flags:
 			<ul>
 				<li><span class="highlight-code">GFX_FLAG::FILLBOX_FLIP_V</span> Exchanges the top and bottom borders, as well as the top(left/right) and bottom(left/right) corners</li>
 				<li><span class="highlight-code">GFX_FLAG::FILLBOX_FLIP_H</span> Exchanges the left and right borders, as well as the left(top/bottom) and right(top/bottom) corners</li>
 				<li><span class="highlight-code">GFX_FLAG::FILLBOX_ROTATE</span> Draws the borders and corners rotated 45 degrees to the right within the box's bounds and swaps them accordingly</li>
 			</ul>
+			Since it's a protected member function it should only be called by inheriting classes.
 			
 			<div class="codeblock">protected:
 	char selected;
 	char hover;</div>
 			You can use this variables as flags for the inheriting widgets.
 			<ul>
-				<li><span class="highlight-code">selected</span> is usually triggered when the mouse button is pressed over the widget's box. This way you know when to return a MOUSE_RELEASE or a MOUSE_UP input (or no input at all)</li>
+				<li>You should trigger the <span class="highlight-code">selected</span> variable when the mouse is pressed over the widget's bounding box. Thanks to this you can return MOUSE_DOWN, MOUSE_UP, MOUSE_RELEASE and MOUSE_DRAG inputs</li>
 				<li><span class="highlight-code">hover</span> is triggered when the mouse enters the widget's bounding box. Use it to return MOUSE_HOVER and MOUSE_LEAVE inputs.</li>
-				<li>You can use both at the same time to return MOUSE_DRAG inputs</li>
 			</ul>
 			
 			<div id="ref-gui-menu" class="doc-title">GUI::Menu</div>
@@ -314,11 +312,11 @@ ALLEGRO_COLOR fontColor() const;</div>
 			<div class="codeblock">Input* getInput (GBox, Resource&amp;, ALLEGRO_EVENT&amp;, ALLEGRO_EVENT_QUEUE*);</div>
 			Returns an Input pointer that can have the following types:
 			<ul>
-				<li><span class="highlight-code">MOUSE_DOWN</span> When the mouse is pressed over the bounding box.</li>
-				<li><span class="highlight-code">MOUSE_RELEASE</span> When the mouse is released over the bounding box.</li>
-				<li><span class="highlight-code">MOUSE_UP</span> When the mouse is released outside the bounding box but it was pressed in it.</li>
-				<li><span class="highlight-code">MOUSE_HOVER</span> When the mouse moves over the bounding box.</li>
-				<li><span class="highlight-code">MOUSE_UP</span> When the mouse leaves the bounding box.</li>
+				<li><span class="highlight-code">INPUT_TYPE::MOUSE_DOWN</span> When the mouse is pressed over the bounding box.</li>
+				<li><span class="highlight-code">INPUT_TYPE::MOUSE_RELEASE</span> When the mouse is released over the bounding box.</li>
+				<li><span class="highlight-code">INPUT_TYPE::MOUSE_UP</span> When the mouse is released outside the bounding box but it was pressed in it.</li>
+				<li><span class="highlight-code">INPUT_TYPE::MOUSE_HOVER</span> When the mouse moves over the bounding box.</li>
+				<li><span class="highlight-code">INPUT_TYPE::MOUSE_UP</span> When the mouse leaves the bounding box.</li>
 			</ul>
 			If there's no interaction with the button, a NULL pointer will be returned.
 			
@@ -394,9 +392,10 @@ void decrease();</div>
 			<div class="codeblock">Input* getInput (GBox menupos, Resource&amp; res, ALLEGRO_EVENT&amp; ev, ALLEGRO_EVENT_QUEUE* eq);</div>
 			Returns an Input pointer. This function behaves like the Button widget, however, it also returns the following Inputs:
 			<ul>
-				<li><span class="highlight-code">MOUSE_HOLD</span> When the mouse is pressed and is being held over one of the increse/decrease buttons, causing the scroll value to increase or decrease.</li>
-				<li><span class="highlight-code">MOUSE_DRAG</span> When the mouse is pressed on the scroll bar and is being moved inside it.</li>
+				<li><span class="highlight-code">INPUT_TYPE::MOUSE_HOLD</span> When the mouse is pressed and is being held over one of the increse/decrease buttons, causing the scroll value to increase or decrease.</li>
+				<li><span class="highlight-code">INPUT_TYPE::MOUSE_DRAG</span> When the mouse is pressed on the scroll bar and is being moved inside it.</li>
 			</ul>
+			Note that <span class="highlight-code">INPUT_TYPE::MOUSE_DOWN</span> and <span class="highlight-code">INPUT_TYPE::MOUSE_DRAG</span> returns indicate that the scroll value has changed
 	</body>
 	<script type="text/javascript">
 		function highlighter()

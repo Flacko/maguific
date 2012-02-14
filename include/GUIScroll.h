@@ -16,7 +16,7 @@ class DLL_EXPORT Scroll : public Widget
 		void max (int m);
 		int max() const;
 
-		void buttonHeight (int bh);
+		void buttonHeight (int bH);
 		int buttonHeight() const;
 
 		void box (GBox b);

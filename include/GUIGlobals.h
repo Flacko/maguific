@@ -2,10 +2,17 @@
 #include <algorithm>
 #include <allegro.hpp>
 #include <vector>
-#include "GUILib.h"
+#include <set>
+#include <cstdio>
 
 #ifndef _GUI_GLOBALS_H_
 #define _GUI_GLOBALS_H_
+
+#ifdef BUILD_DLL
+#define DLL_EXPORT __declspec(dllexport)
+#else
+#define DLL_EXPORT __declspec(dllimport)
+#endif
 
 namespace GUI
 {
@@ -161,13 +168,15 @@ namespace GUI
 
 #include "GUIInput.h"
 #include "GUIResource.h"
+
 #include "GUIWidget.h"
 #include "GUIMenu.h"
-#include "GUIManager.h"
-
 #include "GUIButton.h"
 #include "GUICheckBox.h"
 #include "GUIScroll.h"
+#include "GUIDropList.h"
+
+#include "GUIManager.h"
 
 }
 

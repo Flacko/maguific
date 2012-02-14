@@ -1,4 +1,4 @@
-#include <cstdio>
+
 #include "GUIGlobals.h"
 
 GUI::Resource::Resource()
