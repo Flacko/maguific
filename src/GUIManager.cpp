@@ -9,7 +9,7 @@ GUI::Manager::~Manager()
 {
 	for (std::vector<Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
 	{
-		GUI::Widget* w = (GUI::Widget*)(*it);
+		GUI::Widget* w = (GUI::Widget*) (*it);
 		delete (w);
 		w = NULL;
 	}
@@ -31,7 +31,7 @@ GUI::Input* GUI::Manager::getInput (ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq)
 		Input* in = (*it)->getInput (GBox(), res, ev, eq);
 		if (in)
 		{
-			if(in->valid())
+			if (in->valid())
 			{
 				return in;
 			}

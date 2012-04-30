@@ -28,7 +28,7 @@ GUI::Input::~Input()
 
 bool GUI::Input::valid()
 {
-	if(_widget == NULL or _type == INPUT_TYPE::NONE)
+	if (_widget == NULL or _type == INPUT_TYPE::NONE)
 	{
 		return false;
 	}

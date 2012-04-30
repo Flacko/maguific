@@ -42,18 +42,18 @@ void GUI::CheckBox::draw (GBox menupos, Resource& res)
 #undef BMP
 }
 
-GUI::Input* GUI::CheckBox::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq)
+GUI::Input* GUI::CheckBox::getInput (GBox menupos, Resource& /*res*/, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* /*eq*/)
 {
 	GBox colbox (box() >> menupos);
 	if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
 	{
-		if (selected)
+		if (clicked)
 		{
-			selected = false;
+			clicked = false;
 			if (colbox.collides (GPoint (ev.mouse.x, ev.mouse.y)))
 			{
 				value (!value());
-				return new Input (INPUT_TYPE::MOUSE_RELEASE, this, NULL);
+				return new Input (INPUT_TYPE::MOUSE_CLICK, this, NULL);
 			}
 			return new Input (INPUT_TYPE::MOUSE_UP, this, NULL);
 		}
@@ -62,7 +62,7 @@ GUI::Input* GUI::CheckBox::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT&
 	{
 		if (colbox.collides (GPoint (ev.mouse.x, ev.mouse.y)))
 		{
-			selected = true;
+			clicked = true;
 			return new Input (INPUT_TYPE::MOUSE_DOWN, this, NULL);
 		}
 	}

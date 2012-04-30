@@ -1,7 +1,7 @@
 
 #include "GUIGlobals.h"
 
-GUI::Widget::Widget() : _id (-1), selected (false), hover (false)
+GUI::Widget::Widget() : _id (-1), clicked (false), hover (false)
 {
 	foreColor = al_map_rgb (0xFF, 0xFF, 0xFF);
 	backColor = al_map_rgb (0xFF, 0xFF, 0xFF);
@@ -41,13 +41,13 @@ void GUI::Widget::setColors (ALLEGRO_COLOR f, ALLEGRO_COLOR b)
 	backColor = b;
 }
 
-void GUI::Widget::draw (GBox menupos, Resource& res)
+void GUI::Widget::draw (GBox menupos, Resource& /*res*/)
 {
 	GBox b (box() >> menupos);
 	al_draw_rectangle (b.x, b.y, b.x + b.w, b.y + b.h, foreColor, 1.0);
 }
 
-GUI::Input* GUI::Widget::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq)
+GUI::Input* GUI::Widget::getInput (GBox /*menupos*/, Resource& /*res*/, ALLEGRO_EVENT& /*ev*/, ALLEGRO_EVENT_QUEUE* /*eq*/)
 {
 	return NULL;
 }

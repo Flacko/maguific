@@ -25,8 +25,8 @@ class DLL_EXPORT Widget
 		int _id; //numeric index for this widget in the menu's widget array
 		GBox _box; //geometric class to store the widget's coords
 
-		char selected; //selected (mouse pressed on widget but not released yet)
-		char hover; // hoovering (mouse is over the widget)
+		int clicked; //clicked (true if mouse pressed on widget but not released yet)
+		int hover; // hoovering (true if mouse is over the widget)
 
 		ALLEGRO_COLOR foreColor; //foreground color (borders, whatever)
 		ALLEGRO_COLOR backColor; //background color (backgrounds and stuff)

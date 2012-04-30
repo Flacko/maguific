@@ -14,6 +14,10 @@
 #define DLL_EXPORT __declspec(dllimport)
 #endif
 
+#define al_destroy_ustr(x) if(x){al_ustr_free(x); x=NULL;}
+
+#define fillBoxShort(a,b) fillBox (a, BMP (bd_t), BMP (bd_r), BMP (bd_b), BMP (bd_l), BMP (cr_tl), BMP (cr_tr), BMP (cr_br), BMP (cr_bl), BMP (bg),  b)
+
 namespace GUI
 {
 	struct DLL_EXPORT FLAG
@@ -73,6 +77,20 @@ namespace GUI
 			scroll_bar_cr_bl, scroll_bar_cr_br,
 			scroll_bar_bg, scroll_bar_fg,
 
+			DROPLIST,
+			droplist_bd_t, droplist_bd_r,
+			droplist_bd_b, droplist_bd_l,
+			droplist_cr_tl, droplist_cr_tr,
+			droplist_cr_bl, droplist_cr_br,
+			droplist_bg, droplist_fg,
+
+			DROPLIST_OPTION,
+			droplist_option_bd_t, droplist_option_bd_r,
+			droplist_option_bd_b, droplist_option_bd_l,
+			droplist_option_cr_tl, droplist_option_cr_tr,
+			droplist_option_cr_bl, droplist_option_cr_br,
+			droplist_option_bg, droplist_option_fg,
+
 			size //keep track of the enum size so it's easier to extend this enum
 		};
 	};
@@ -85,6 +103,7 @@ namespace GUI
 			BUTTON,
 			CHECKBOX,
 			SCROLL,
+			DROPLIST,
 			size
 		};
 	};
@@ -96,7 +115,7 @@ namespace GUI
 
 			MOUSE_DOWN, //when the mouse is pressed inside an element
 			MOUSE_UP, //when the mouse is released inside an element (however, the mouse wasn't pressed inside it)
-			MOUSE_RELEASE, //when an element is clicked (down+up inside the element)
+			MOUSE_CLICK, //when an element is clicked (down+up inside the element)
 
 			MOUSE_HOLD, //when the mouse is held on an element
 			MOUSE_DRAG, //when a draggable element is being dragged
@@ -111,14 +130,15 @@ namespace GUI
 			size //enum size for easier extending
 		};
 	};
-	struct DLL_EXPORT GPoint
+	template<typename T>
+	struct DLL_EXPORT GVector2D
 	{
-		int x, y;
-		GPoint() : x (0), y (0) {}
-		GPoint (int _x, int _y) : x (_x), y (_y) {}
-		GPoint (const GPoint& other) : x (other.x), y (other.y) {}
+		T x, y;
+		GVector2D () : x (0), y (0) {}
+		GVector2D (T _x, T _y) : x (_x), y (_y) {}
+		GVector2D (const GVector2D& other) : x (other.x), y (other.y) {}
 
-		GPoint& operator = (const GPoint& other)
+		GVector2D& operator = (const GVector2D& other)
 		{
 			x = other.x;
 			y = other.y;
@@ -126,14 +146,15 @@ namespace GUI
 		}
 	};
 
-	struct DLL_EXPORT GBox
+	template<typename T>
+	struct DLL_EXPORT GVector4D
 	{
-		int x, y, w, h;
-		GBox() : x (0), y (0), w (0), h (0) {}
-		GBox (int _x, int _y, int _w, int _h) : x (_x), y (_y), w (_w), h (_h) {}
-		GBox (const GBox& other) : x (other.x), y (other.y), w (other.w), h (other.h) {}
+		T x, y, w, h;
+		GVector4D () : x (0), y (0), w (0), h (0) {}
+		GVector4D (T _x, T _y, T _w, T _h) : x (_x), y (_y), w (_w), h (_h) {}
+		GVector4D (const GVector4D& other) : x (other.x), y (other.y), w (other.w), h (other.h) {}
 
-		GBox& operator= (const GBox& other)
+		GVector4D& operator= (const GVector4D& other)
 		{
 			x = other.x;
 			y = other.y;
@@ -141,19 +162,19 @@ namespace GUI
 			h = other.h;
 			return *this;
 		}
-		GBox operator>> (const GBox& other)
+		GVector4D operator>> (const GVector4D<T>& other)
 		{
-			return GBox (x + other.x, y + other.y, w, h);
+			return GVector4D (x + other.x, y + other.y, w, h);
 		}
-		GBox operator>> (const GPoint& other)
+		GVector4D operator>> (const GVector2D<T>& other)
 		{
-			return GBox (x + other.x, y + other.y, w, h);
+			return GVector4D (x + other.x, y + other.y, w, h);
 		}
-		bool collides (GPoint other)
+		bool collides (const GVector2D<T>& other)
 		{
-			return (other.x >= x && other.x <= x + w) && (other.y >= y && other.y <= y + h);
+			return (other.x >= x and other.x <= x + w) and (other.y >= y and other.y <= y + h);
 		}
-		bool collides (GBox other)
+		bool collides (const GVector4D<T>& other)
 		{
 			if ( (other.x <= x + w and other.x >= x) or (other.x + other.w <= x + w and other.x + other.w >= x))
 			{
@@ -165,6 +186,9 @@ namespace GUI
 			return false;
 		}
 	};
+
+	typedef GVector2D<int> GPoint;
+	typedef GVector4D<int> GBox;
 
 #include "GUIInput.h"
 #include "GUIResource.h"

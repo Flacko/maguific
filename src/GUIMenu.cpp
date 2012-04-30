@@ -22,11 +22,12 @@ GUI::WIDGET_TYPE::en GUI::Menu::type() const
 void GUI::Menu::draw (GBox menupos, Resource& res)
 {
 #define BMP(x) res.getGfx(GFX_ID::menu_##x)
-	fillBox (box(), BMP (bd_t), BMP (bd_r), BMP (bd_b), BMP (bd_l), BMP (cr_tl), BMP (cr_tr), BMP (cr_br), BMP (cr_bl), BMP (bg), 0);
+	fillBoxShort (box(), NULL);
 #undef BMP
+	GBox dbox (box() >> menupos);
 	for (std::vector<Widget*>::iterator it = _widget.begin(); it != _widget.end(); it++)
 	{
-		(*it)->draw (box(), res);
+		(*it)->draw (dbox, res);
 	}
 }
 
@@ -69,24 +70,22 @@ GUI::Input* GUI::Menu::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& ev,
 	{
 		GPoint mouse (ev.mouse.x - menupos.x, ev.mouse.y - menupos.y);
 
-		if (_box.collides (mouse) and !selected)
+		if (_box.collides (mouse) and !clicked)
 		{
-			selected = true;
+			clicked = true;
 			return new Input (INPUT_TYPE::MOUSE_DOWN, this, NULL);
 		}
 	}
 	else if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
 	{
 		GPoint mouse (ev.mouse.x - menupos.x, ev.mouse.y - menupos.y);
-		bool collides = _box.collides (mouse);
-		if (selected)
+		if (clicked)
 		{
-			selected = false;
+			clicked = false;
 
-			if (collides)
-				return new Input (INPUT_TYPE::MOUSE_RELEASE, this, NULL);
-
-			else if (!collides)
+			if (_box.collides (mouse))
+				return new Input (INPUT_TYPE::MOUSE_CLICK, this, NULL);
+			else
 				return new Input (INPUT_TYPE::MOUSE_UP, this, NULL);
 		}
 	}

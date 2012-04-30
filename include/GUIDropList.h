@@ -5,42 +5,48 @@
 class DLL_EXPORT DropList : public Widget
 {
 	public:
-		DropList(GBox b, ALLEGRO_FONT* f, int s, int bW);
+		DropList (GBox b, ALLEGRO_FONT* f, ALLEGRO_USTR* l, ALLEGRO_COLOR fC, Scroll* sC, int sO);
 		~DropList();
+		WIDGET_TYPE::en type();
 
-		void options(ALLEGRO_USTR* o);
-		ALLEGRO_USTR* options(int i) const;
+		void addOption (ALLEGRO_USTR* o);
+		void removeOption (int i);
+		ALLEGRO_USTR* getOption (int i) const;
 
-		void options(std::vector<ALLEGRO_USTR*> o);
-		std::vector<ALLEGRO_USTR*> options() const;
 
-		void enabled(int i, bool e);
-		bool enabled(int i) const;
-
-		void selection(int s);
+		void selection (int s);
 		int selection() const;
 
-		void font(ALLEGRO_FONT* f);
+		void font (ALLEGRO_FONT* f);
 		ALLEGRO_FONT* font() const;
 
-		void buttonWidth(int bW);
-		int buttonWidth() const;
+		void fontColor (ALLEGRO_COLOR fC);
+		ALLEGRO_COLOR fontColor() const;
 
-		void clear();
+		void scroll (Scroll* s);
+		Scroll* scroll() const;
+
+		void label (ALLEGRO_USTR* l);
+		ALLEGRO_USTR* label() const;
+
+		void shownOptions (int sO);
+		int shownOptions() const;
 
 		void draw (GBox menupos, Resource& res);
 		Input* getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq);
 
 	private:
+		void recalculateScrollMax();
 		ALLEGRO_FONT* _font;
+		ALLEGRO_COLOR _fontColor;
+		int _expand;
 		int _selection;
-		int _buttonWidth;
+		int _shownOptions;
 
-		std::set<int> _enabled;
-		std::vector<ALLEGRO_USTR> _options;
+		std::vector<ALLEGRO_USTR*> _options;
+		ALLEGRO_USTR* _label;
 
 		Scroll* _scroll;
-		Button* _button;
 };
 
 #endif

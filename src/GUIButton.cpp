@@ -54,7 +54,7 @@ void GUI::Button::draw (GBox menupos, Resource& res)
 {
 	GBox dbox (box() >> menupos);
 #define BMP(x) res.getGfx(GFX_ID::button_##x)
-	fillBox (dbox, BMP (bd_t), BMP (bd_r), BMP (bd_b), BMP (bd_l), BMP (cr_tl), BMP (cr_tr), BMP (cr_br), BMP (cr_bl), BMP (bg), 0);
+	fillBoxShort (dbox, NULL);
 #undef BMP
 	if (_label)
 	{
@@ -62,17 +62,17 @@ void GUI::Button::draw (GBox menupos, Resource& res)
 	}
 }
 
-GUI::Input* GUI::Button::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* eq)
+GUI::Input* GUI::Button::getInput (GBox menupos, Resource& /*res*/, ALLEGRO_EVENT& ev, ALLEGRO_EVENT_QUEUE* /*eq*/)
 {
 	GBox colbox (box() >> menupos);
 	if (ev.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
 	{
-		if (selected)
+		if (clicked)
 		{
-			selected = false;
+			clicked = false;
 			if (colbox.collides (GPoint (ev.mouse.x, ev.mouse.y)))
 			{
-				return new Input (INPUT_TYPE::MOUSE_RELEASE, this, NULL);
+				return new Input (INPUT_TYPE::MOUSE_CLICK, this, NULL);
 			}
 			return new Input (INPUT_TYPE::MOUSE_UP, this, NULL);
 		}
@@ -81,7 +81,7 @@ GUI::Input* GUI::Button::getInput (GBox menupos, Resource& res, ALLEGRO_EVENT& e
 	{
 		if (colbox.collides (GPoint (ev.mouse.x, ev.mouse.y)))
 		{
-			selected = true;
+			clicked = true;
 			return new Input (INPUT_TYPE::MOUSE_DOWN, this, NULL);
 		}
 	}
